@@ -44,4 +44,25 @@ final class SongController extends AbstractController
         $location = $urlGenratorInterface->generate('get_song', ['id' => $song->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
         return new JsonResponse($song, Response::HTTP_CREATED, ['Location' => $location], true);
     }
+
+    #[Route('api/v1/song/{id}', name: 'update_song', methods: ['PUT'])]
+    public function update(Song $id, Request $request, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $songData = $request->toArray();
+        $id->setName($songData['name'] ?? 'N/A');
+        // $id->setArtiste($songData['artiste'] ?? 'N/A';
+        $entityManager->persist($id);
+        $entityManager->flush();
+
+        return new JsonResponse($id, Response::HTTP_NO_CONTENT);
+    }
+
+    #[Route('api/v1/song/{id}', name: 'delete_song', methods: ['DELETE'])]
+    public function delete(Song $id, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $entityManager->remove($id);
+        $entityManager->flush();
+
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+    }
 }
